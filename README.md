@@ -18,7 +18,7 @@ Mímisbrunnr and Mímir are one bounded context split across two repositories fo
 
 ## The cosmos
 
-Mímir is one realm of the [Norse Architecture](https://github.com/NorseArchitecture). The whole platform composes at [Bifröst](https://github.com/NorseArchitecture/Bifrost) — clone once, cross the bridge, and every session starts there so decisions get brainstormed across the entire landscape, not in isolation. Every design is tried in [Glitnir](https://github.com/NorseArchitecture/Glitnir), the design court, before code is forged here; this realm's specs and plans will live in the court's [docs/Mimir/](https://github.com/NorseArchitecture/Glitnir/tree/master/docs/Mimir) once they converge.
+Mímir is one realm of the [Norse Architecture](https://github.com/NorseArchitecture). The whole platform composes at [Bifröst](https://github.com/NorseArchitecture/Bifrost) — clone once, cross the bridge, and every session starts there so decisions get brainstormed across the entire landscape, not in isolation. Every design is tried in [Glitnir](https://github.com/NorseArchitecture/Glitnir), the design court, before code is forged here; this realm's specs and plans will live in the court's [docs/Mímir/](https://github.com/NorseArchitecture/Glitnir/tree/master/docs/Mimir) once they converge.
 
 ## Soundtrack: War of the Gods
 [![Soundtrack: War of the Gods](https://img.youtube.com/vi/FVAQQujgSxQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=FVAQQujgSxQ)
