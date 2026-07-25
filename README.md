@@ -6,7 +6,7 @@
 
 *Image credit: [@norsemythologyclips](https://www.instagram.com/norsemythologyclips/) — go follow them.*
 
-The serving layer for the Norse Architecture's reference data — **`Norse.ReferenceData.Components`**, **`.Web.Server`**, and **`.Worker`**: Blazor components, the gRPC service host, and the background worker that keeps ISO/IANA data current. Nobody needs the well itself to get an answer — they need Mímir's head, wherever it's carried, which is exactly what this realm does against [Mímisbrunnr](https://github.com/NorseArchitecture/Mimisbrunnr)'s data. In the dependency chain it rides on Mímisbrunnr's entities and view models, and on Yggdrasil below that.
+The serving layer for the Norse Architecture's reference data — **`Norse.Reference.Components`**, **`.Web.Server`**, and **`.Worker`**: Blazor components, the gRPC service host, and the background worker that keeps ISO/IANA data current. Nobody needs the well itself to get an answer — they need Mímir's head, wherever it's carried, which is exactly what this realm does against [Mímisbrunnr](https://github.com/NorseArchitecture/Mimisbrunnr)'s data. In the dependency chain it rides on Mímisbrunnr's entities and view models, and on Yggdrasil below that.
 
 ## Status
 
