@@ -16,6 +16,10 @@ public sealed class ReferenceContractsGenerator : IIncrementalGenerator
 {
 	const string CsvFileName = "UNSD — Methodology.csv";
 
+	// MimirNamespaces.Root — the single hand-minted act (spec §6); every dataset namespace chains
+	// from it. FOREVER: changing it re-keys the universe.
+	const string RootUuid = "8db01f36-dd6e-4cd1-8233-7ab1ec672fff";
+
 	static readonly DiagnosticDescriptor _missingColumn = new(
 		"MIMIR001", "UNSD CSV header is missing an expected column",
 		"The UNSD raw CSV header does not contain the expected column '{0}' — refusing to emit an empty IsoCountryCode enum", "Norse.Reference",
@@ -74,5 +78,8 @@ public sealed class ReferenceContractsGenerator : IIncrementalGenerator
 
 		var source = IsoCountryCodeEmitter.Emit(members);
 		ctx.AddSource("IsoCountryCode.g.cs", SourceText.From(source, Utf8NoBom.Encoding));
+
+		var datasetSource = Iso3166Emitter.Emit(members, RootUuid);
+		ctx.AddSource("Iso3166.g.cs", SourceText.From(datasetSource, Utf8NoBom.Encoding));
 	}
 }
