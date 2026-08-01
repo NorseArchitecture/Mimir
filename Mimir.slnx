@@ -15,6 +15,7 @@
 		<File Path="src/Directory.Build.targets" />
 		<Project Path="src/Reference.Contracts/Reference.Contracts.csproj" />
 		<Project Path="src/Reference.Seeds/Reference.Seeds.csproj" />
+		<Project Path="src/Reference.Web.Server/Reference.Web.Server.csproj" />
 	</Folder>
 	<Folder Name="/gen/">
 		<File Path="gen/Directory.Build.props" />
@@ -27,5 +28,6 @@
 		<Project Path="tests/Reference.Contracts.Generator.Tests/Reference.Contracts.Generator.Tests.csproj" />
 		<Project Path="tests/Reference.Contracts.Tests/Reference.Contracts.Tests.csproj" />
 		<Project Path="tests/Reference.Seeds.Tests/Reference.Seeds.Tests.csproj" />
+		<Project Path="tests/Reference.Web.Server.Tests/Reference.Web.Server.Tests.csproj" />
 	</Folder>
 </Solution>
