@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Description>Norse.Reference.Contracts: the cross-context-referenceable reference-data surface — the generated IsoCountryCode enum with tri-form span parsing, the Iso3166 dataset with precomputed v5 identifiers, MimirNamespaces, and the reference gRPC wire contracts. WASM-lean by charter: no EF, no server types, ever.</Description>
+		<!-- The generator's hardcoded output lands in "Norse.Reference" (not "Norse.Reference.Contracts")
+		     so consumers reach IsoCountryCode/Iso3166/MimirNamespaces without a ".Contracts" segment;
+		     this override brings IDE0130's folder-match expectation for this project's hand-written
+		     root-level files (the gRPC wire contracts) in line with that same namespace. -->
+		<RootNamespace>Norse.Reference</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="../../seeds/raw/UNSD — Methodology.csv" />
+		<NorseRef Include="Primitives">
+			<Repo>Svartalfheim</Repo>
+		</NorseRef>
+		<NorseRef Include="Abstractions.Contracts">
+			<Repo>Asgard</Repo>
+		</NorseRef>
+		<!-- Overrides a known-vulnerable transitive version pulled in by System.ServiceModel.Primitives —
+		     same fix Heimdall's AuthN.Services.csproj carries for the identical dependency. -->
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="11.*-*" />
+		<PackageReference Include="System.ServiceModel.Primitives" Version="10.*" />
+		<ProjectReference Include="../../gen/Reference.Contracts.Generator/Reference.Contracts.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	</ItemGroup>
+</Project>

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<Description>Norse.Reference.Web.Server: IReferenceService's gRPC implementation over Mímisbrunnr's well-and-wire read repository. CountryQuery wraps Heimdall-shaped-pattern wire DTOs (Asgard's IQueryRequest&lt;TResponse&gt;) for mediator identity and [Authorize]; CountryQueryHandler parses at the edge, resolves the v5 identity from the generated Iso3166.Ids lookup with zero database involvement, then projects the wire response directly off IReadRepository&lt;CountryOrAreaView&gt;. ReferenceService itself is a bare hydrate-and-send forwarder, no mapping switches. Always runs inside an HTTP context, bound into Yggdrasil's Hosting.Web.Server process.</Description>
+		<IsAotCompatible>false</IsAotCompatible>
+	</PropertyGroup>
+	<ItemGroup>
+		<NorseRef Include="Abstractions.Web.Server" Generator="true">
+			<Repo>Asgard</Repo>
+		</NorseRef>
+		<NorseRef Include="Infrastructure.Persistence.EntityFramework">
+			<Repo>Midgard</Repo>
+		</NorseRef>
+		<NorseRef Include="Reference.Data">
+			<Repo>Mimisbrunnr</Repo>
+		</NorseRef>
+		<!-- Runtime registration only (AddDbContextFactory<ReferenceDbContext>), no migrations
+		     assembly name is ever passed, so this project never runs migrations itself, matching
+		     Identity.Web.Server's identical Npgsql-direct dependency for the same reason. -->
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.*-*" />
+		<ProjectReference Include="../Reference.Contracts/Reference.Contracts.csproj" />
+	</ItemGroup>
+</Project>
