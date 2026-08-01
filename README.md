@@ -2,7 +2,9 @@
 
 > Mímir — beheaded in the Æsir-Vanir war, yet still carried and consulted by Odin for counsel.
 
-![Mímir — beheaded in the Æsir-Vanir war, yet still carried and consulted by Odin for counsel](https://github.com/user-attachments/assets/f47c4998-79d6-4df2-a615-159483164c9b "Mímir — the severed head Odin still consults for counsel")
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f47c4998-79d6-4df2-a615-159483164c9b" alt="Mímir — beheaded in the Æsir-Vanir war, yet still carried and consulted by Odin for counsel" title="Mímir — the severed head Odin still consults for counsel" />
+</p>
 
 *Image credit: [@norsemythologyclips](https://www.instagram.com/norsemythologyclips/) — go follow them.*
 
