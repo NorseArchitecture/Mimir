@@ -1,0 +1,29 @@
+<Solution>
+	<Folder Name="/Solution Items/">
+		<File Path=".editorconfig" />
+		<File Path=".gitattributes" />
+		<File Path=".gitignore" />
+		<File Path="CLAUDE.md" />
+		<File Path="Directory.Build.props" />
+		<File Path="global.json" />
+		<File Path="LICENSE" />
+		<File Path="nuget.config" />
+		<File Path="README.md" />
+	</Folder>
+	<Folder Name="/src/">
+		<File Path="src/Directory.Build.props" />
+		<File Path="src/Directory.Build.targets" />
+		<Project Path="src/Reference.Contracts/Reference.Contracts.csproj" />
+	</Folder>
+	<Folder Name="/gen/">
+		<File Path="gen/Directory.Build.props" />
+		<File Path="gen/Directory.Build.targets" />
+		<Project Path="gen/Reference.Contracts.Generator/Reference.Contracts.Generator.csproj" />
+	</Folder>
+	<Folder Name="/tests/">
+		<File Path="tests/Directory.Build.props" />
+		<File Path="tests/Directory.Build.targets" />
+		<Project Path="tests/Reference.Contracts.Generator.Tests/Reference.Contracts.Generator.Tests.csproj" />
+		<Project Path="tests/Reference.Contracts.Tests/Reference.Contracts.Tests.csproj" />
+	</Folder>
+</Solution>

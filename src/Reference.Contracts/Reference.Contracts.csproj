@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Description>Norse.Reference.Contracts: the cross-context-referenceable reference-data surface — the generated IsoCountryCode enum with tri-form span parsing, the Iso3166 dataset with precomputed v5 identifiers, MimirNamespaces, and the reference gRPC wire contracts. WASM-lean by charter: no EF, no server types, ever.</Description>
+	</PropertyGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="../../seeds/raw/UNSD — Methodology.csv" />
+		<NorseRef Include="Primitives">
+			<Repo>Svartalfheim</Repo>
+		</NorseRef>
+		<ProjectReference Include="../../gen/Reference.Contracts.Generator/Reference.Contracts.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	</ItemGroup>
+</Project>
