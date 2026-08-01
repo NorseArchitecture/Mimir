@@ -10,13 +10,12 @@
 		<NorseRef Include="Infrastructure.Persistence.EntityFramework">
 			<Repo>Midgard</Repo>
 		</NorseRef>
+		<NorseRef Include="Persistence.EntityFramework.PostgreSQL">
+			<Repo>Urdarbrunnr</Repo>
+		</NorseRef>
 		<NorseRef Include="Reference.Data">
 			<Repo>Mimisbrunnr</Repo>
 		</NorseRef>
-		<!-- Runtime registration only (AddDbContextFactory<ReferenceDbContext>), no migrations
-		     assembly name is ever passed, so this project never runs migrations itself, matching
-		     Identity.Web.Server's identical Npgsql-direct dependency for the same reason. -->
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.*-*" />
 		<ProjectReference Include="../Reference.Contracts/Reference.Contracts.csproj" />
 	</ItemGroup>
 </Project>

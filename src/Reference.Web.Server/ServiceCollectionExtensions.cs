@@ -1,6 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Norse.Infrastructure.Persistence.EntityFramework;
-using Norse.Persistence.EntityFramework;
+using Norse.Persistence.EntityFramework.PostgreSQL;
 using Norse.Reference.Data;
 
 namespace Norse.Reference.Web.Server;
@@ -8,30 +7,23 @@ namespace Norse.Reference.Web.Server;
 /// <summary>Composition-root wiring for Reference.Web.Server's gRPC reference-data service.</summary>
 public static class ServiceCollectionExtensions
 {
-	extension(IServiceCollection services)
+	extension(IHostApplicationBuilder builder)
 	{
 		/// <summary>
-		/// Registers <see cref="ReferenceDbContext"/> as an <see cref="IDbContextFactory{TContext}"/> —
-		/// factory, not a plain scoped context, because Midgard's <c>AddWell&lt;TContext&gt;()</c> resolves
-		/// its repositories through the factory, never through a directly-injected context — the well
-		/// itself (<c>IReadRepository&lt;CountryOrAreaView&gt;</c>), the generated mediator handler/dispatch
-		/// registration (<c>AddNorseReferenceWebServerHandlers()</c>, emitted by Asgard's registration
-		/// generator), and the code-first gRPC host with <see cref="IReferenceService"/>.
+		/// Registers <see cref="ReferenceDbContext"/> (via <see cref="Norse.Infrastructure.Persistence.EntityFramework.ServiceCollectionExtensions.AddNorseWell{TContext}"/> — Postgres
+		/// only today, see the well-composition spec §5 for SQL Server's deferred status), the generated
+		/// mediator handler wiring, and <see cref="IReferenceService"/> itself.
 		/// </summary>
-		public IServiceCollection AddNorseReferenceService(string connectionString)
+		/// <param name="connectionStringName">The configuration key under <c>ConnectionStrings</c>.</param>
+		/// <returns>The same <paramref name="builder"/> for chaining.</returns>
+		public IHostApplicationBuilder AddNorseReferenceService(string connectionStringName)
 		{
-			services.AddDbContextFactory<ReferenceDbContext>(o =>
-			{
-				o.UseNpgsql(connectionString);
-				o.ApplyNorseConventions(NorseNameRewriters.LowerSnakeCase);
-				o.ApplyNorseTrackingBehavior();
-			});
-			services.AddWell<ReferenceDbContext>();
-			services.AddNorseReferenceWebServerHandlers();
+			builder.AddNorseWell<ReferenceDbContext>(NorsePostgresEfProvider.Instance, connectionStringName);
+			builder.Services.AddNorseReferenceWebServerHandlers();
 
-			services.AddScoped<IReferenceService, ReferenceService>();
+			builder.Services.AddScoped<IReferenceService, ReferenceService>();
 
-			return services;
+			return builder;
 		}
 	}
 }
