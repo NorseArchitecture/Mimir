@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Norse.Infrastructure.Persistence.EntityFramework;
 using Norse.Persistence.EntityFramework;
-using Norse.Reference.Data;
+using Norse.Reference.Data.EntityFramework;
 
 namespace Norse.Reference.Web.Server;
 

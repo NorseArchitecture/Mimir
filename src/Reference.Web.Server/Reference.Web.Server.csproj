@@ -10,7 +10,7 @@
 		<NorseRef Include="Infrastructure.Persistence.EntityFramework">
 			<Repo>Midgard</Repo>
 		</NorseRef>
-		<NorseRef Include="Reference.Data">
+		<NorseRef Include="Reference.Data.EntityFramework">
 			<Repo>Mimisbrunnr</Repo>
 		</NorseRef>
 		<!-- Runtime registration only (AddDbContextFactory<ReferenceDbContext>), no migrations
