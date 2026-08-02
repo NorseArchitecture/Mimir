@@ -10,7 +10,7 @@ The serving layer for the Norse Architecture's reference data — **`Norse.Refer
 
 ## Status
 
-This realm is currently a bare shell — no code, no specs converged yet. Design happens first: brainstorm → spec → plan, recorded in Glitnir's `docs/Mimir/`, before any project is scaffolded here.
+Mímir is the serving layer: **`Reference.Contracts`** (the wire records — `CountryRequest`/`CountryResponse`/`IReferenceService`) and **`Reference.Web.Server`** (the gRPC implementation, bound into Yggdrasil's hosting process). The generated reference surface — the `IsoCountryCode` enum, the `Iso3166` dataset, and `ReferenceNamespaces` — now generates in [Mímisbrunnr](https://github.com/NorseArchitecture/Mimisbrunnr) (`Reference.Data.Primitives`/`.Namespaces`) and arrives here by reference instead of by generation. `Reference.Seeds` is deleted; the canonical seed content lives in Mímisbrunnr.
 
 ## Why two repos
 

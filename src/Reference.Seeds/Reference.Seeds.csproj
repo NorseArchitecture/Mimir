@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<Description>Norse.Reference.Seeds: the server-only raw-dataset home — canonical source bytes (UNSD M49 today; ISO 4217, ISO 639, IANA tzdata as they land) embedded for seed tooling. Never referenced from WASM or MAUI, by the same charter language that keeps Abstractions.Backend off the client.</Description>
-	</PropertyGroup>
-	<ItemGroup>
-		<EmbeddedResource Include="../../seeds/raw/UNSD — Methodology.csv" LogicalName="Norse.Reference.Seeds.UnsdM49.csv" />
-	</ItemGroup>
-</Project>

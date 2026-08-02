@@ -2,7 +2,7 @@ using Norse.Abstractions.Backend;
 using Norse.Abstractions.Contracts;
 using Norse.Abstractions.Web.Server.Mediator;
 using Norse.Primitives;
-using Norse.Reference.Data;
+using Norse.Reference.Data.EntityFramework;
 
 namespace Norse.Reference.Web.Server;
 
