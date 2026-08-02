@@ -18,20 +18,15 @@ public static class ServiceCollectionExtensions
 		/// registration (<c>AddNorseReferenceWebServerHandlers()</c>, emitted by Asgard's registration
 		/// generator), and the code-first gRPC host with <see cref="IReferenceService"/>.
 		/// </summary>
-		public IServiceCollection AddNorseReferenceService(string connectionString)
-		{
-			services.AddDbContextFactory<ReferenceDbContext>(o =>
+		public IServiceCollection AddNorseReferenceService(string connectionString) => services
+			.AddDbContextFactory<ReferenceDbContext>(o =>
 			{
 				o.UseNpgsql(connectionString);
 				o.ApplyNorseConventions(NorseNameRewriters.LowerSnakeCase);
 				o.ApplyNorseTrackingBehavior();
-			});
-			services.AddWell<ReferenceDbContext>();
-			services.AddNorseReferenceWebServerHandlers();
-
-			services.AddScoped<IReferenceService, ReferenceService>();
-
-			return services;
-		}
+			})
+			.AddWell<ReferenceDbContext>()
+			.AddNorseReferenceWebServerHandlers()
+			.AddScoped<IReferenceService, ReferenceService>();
 	}
 }
