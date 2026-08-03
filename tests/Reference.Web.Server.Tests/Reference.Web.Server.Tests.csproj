@@ -1,5 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
+		<!-- Direct, not transitive via Reference.Web.Server: NORSE071 exempts *.Tests (the realm
+		     dependency law governs shipped architecture, not evidence rigs), so this integration test
+		     is free to exercise Midgard's real well/repository path end-to-end; see the class doc
+		     comment in CountryQueryHandlerContainerTests. -->
+		<NorseRef Include="Infrastructure.Persistence.EntityFramework">
+			<Repo>Midgard</Repo>
+		</NorseRef>
 		<PackageReference Include="Testcontainers.PostgreSql" VersionOverride="*" />
 		<ProjectReference Include="../../src/Reference.Web.Server/Reference.Web.Server.csproj" />
 	</ItemGroup>

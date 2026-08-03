@@ -7,9 +7,6 @@
 		<NorseRef Include="Abstractions.Web.Server" Generator="true">
 			<Repo>Asgard</Repo>
 		</NorseRef>
-		<NorseRef Include="Infrastructure.Persistence.EntityFramework">
-			<Repo>Midgard</Repo>
-		</NorseRef>
 		<NorseRef Include="Reference.Data.EntityFramework">
 			<Repo>Mimisbrunnr</Repo>
 		</NorseRef>
