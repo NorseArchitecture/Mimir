@@ -17,18 +17,18 @@ public sealed class CountryLookupTests : BunitContext
 	}
 
 	[Fact]
-	async Task An_unrecognized_code_renders_the_validation_message()
+	async Task An_unrecognized_code_renders_locally_and_never_buys_a_round_trip()
 	{
 		var service = Substitute.For<IReferenceService>();
-		service.GetCountry(Arg.Any<CountryRequest>(), Arg.Any<CancellationToken>())
-			.Returns(_ => Task.FromResult<Outcome<CountryResponse>>(
-				new Failed(Problem.ModelError(ErrorCategory.Validation, "Unparseable."))));
 		Services.AddSingleton(service);
 
 		var component = Render<CountryLookup>();
+		await component.Find("fluent-text-input").ChangeAsync("banana");
 		await component.InvokeAsync(() => component.Find("fluent-button").Click());
 
 		component.Markup.ShouldContain("is not a recognized ISO 3166-1 code");
+		// The stamp is the client's own verdict — unproven input never reaches the wire.
+		await service.DidNotReceive().GetCountry(Arg.Any<CountryRequest>(), Arg.Any<CancellationToken>());
 	}
 
 	[Fact]
@@ -41,20 +41,21 @@ public sealed class CountryLookupTests : BunitContext
 		Services.AddSingleton(service);
 
 		var component = Render<CountryLookup>();
+		await component.Find("fluent-text-input").ChangeAsync("US");
 		await component.InvokeAsync(() => component.Find("fluent-button").Click());
 
 		component.Markup.ShouldContain("parsed, but no seeded country matches it");
 	}
 
 	[Fact]
-	async Task A_successful_lookup_renders_the_wire_response_fields()
+	async Task A_successful_lookup_renders_the_wire_fields_and_the_baked_id_matches()
 	{
-		var id = Guid.NewGuid();
+		var bakedId = Iso3166.Ids[IsoCountryCode.UnitedStatesOfAmerica];
 		var service = Substitute.For<IReferenceService>();
 		service.GetCountry(Arg.Any<CountryRequest>(), Arg.Any<CancellationToken>())
 			.Returns(_ => Task.FromResult(Outcome<CountryResponse>.Ok(new CountryResponse
 			{
-				Id = id,
+				Id = bakedId,
 				Alpha2 = "US",
 				Alpha3 = "USA",
 				Name = "United States of America"
@@ -62,10 +63,14 @@ public sealed class CountryLookupTests : BunitContext
 		Services.AddSingleton(service);
 
 		var component = Render<CountryLookup>();
+		await component.Find("fluent-text-input").ChangeAsync("US");
 		await component.InvokeAsync(() => component.Find("fluent-button").Click());
 
 		component.Markup.ShouldContain("USA");
 		component.Markup.ShouldContain("United States of America");
-		component.Markup.ShouldContain(id.ToString());
+		component.Markup.ShouldContain(bakedId.ToString());
+		// The wire id and the client's own baked copy of the same row land identical — the demo's
+		// whole point, now read straight off the proven stamp with no client-side re-parse.
+		component.Markup.ShouldContain("Match");
 	}
 }

@@ -24,7 +24,7 @@ Mímir is **the serving layer** for the platform's reference data — the head O
 ## Build & Test
 
 - `dotnet build Mimir.slnx` — warnings are errors; a single warning fails.
-- `dotnet test Mimir.slnx` — xUnit v3 + Shouldly on Microsoft.Testing.Platform. **VSTest `--filter` does NOT work** — use `dotnet test tests/<Project> -- --filter-class "*.<ClassName>"`. No container fixtures live here — the real-database E2E for the well-and-wire read path lives in Yggdrasil's `Hosting.Web.Server.Tests` (`CountryLookupE2ETests`), which consumes this realm's packages across the genuine NuGet crossing.
+- `dotnet test Mimir.slnx` — xUnit v3 + Shouldly on Microsoft.Testing.Platform. **VSTest `--filter` does NOT work** — use `dotnet test tests/<Project> -- --filter-class "*.<ClassName>"`. `CountryQueryHandlerContainerTests` needs Docker (Testcontainers Postgres); the full wire E2E for the well-and-wire read path additionally lives in Yggdrasil's `Hosting.Web.Server.Tests` (`CountryLookupE2ETests`), which consumes this realm's packages across the genuine NuGet crossing.
 - SDK pinned by `global.json`: `11.0.100-` prerelease.
 
 ## Architecture Facts (decided — do not re-litigate)

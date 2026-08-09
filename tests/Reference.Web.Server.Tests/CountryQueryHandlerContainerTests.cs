@@ -84,7 +84,7 @@ public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture f
 		try
 		{
 			CountryQueryHandler handler = new(repository);
-			var outcome = await handler.Handle(new CountryQuery("US"), cancellationToken);
+			var outcome = await handler.Handle(new CountryQuery(IsoCountryCodes.Parse("US")), cancellationToken);
 
 			var isOk = outcome.TryGetValue(out Success<CountryResponse> success);
 			var isFailed = outcome.TryGetValue(out Failed failed);
@@ -154,7 +154,7 @@ public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture f
 		try
 		{
 			CountryQueryHandler handler = new(repository);
-			var outcome = await handler.Handle(new CountryQuery("USA"), cancellationToken);
+			var outcome = await handler.Handle(new CountryQuery(IsoCountryCodes.Parse("USA")), cancellationToken);
 
 			var isOk = outcome.TryGetValue(out Success<CountryResponse> success);
 			var isFailed = outcome.TryGetValue(out Failed failed);
@@ -175,7 +175,7 @@ public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture f
 		var repository = await BuildRepositoryAsync(fixture.ConnectionString, cancellationToken);
 		CountryQueryHandler handler = new(repository);
 
-		var outcome = await handler.Handle(new CountryQuery("banana"), cancellationToken);
+		var outcome = await handler.Handle(new CountryQuery(IsoCountryCodes.Parse("banana")), cancellationToken);
 
 		outcome.TryGetValue(out Failed failed).ShouldBeTrue();
 		failed.Problem.Category.ShouldBe(ErrorCategory.Validation);

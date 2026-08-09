@@ -12,7 +12,7 @@
 	<code>Iso3166.Ids</code> to prove the two land on the identical value.
 </p>
 
-<FluentTextInput @bind-Value="_code" Label="Code" Placeholder="US, USA, 840, 40..." />
+<FluentTextInput @bind-Value="_request.CodeInput" Label="Code" Placeholder="US, USA, 840, 40..." />
 <FluentButton Appearance="ButtonAppearance.Primary" OnClick="LookupAsync">Look up</FluentButton>
 
 @if (_errorMessage is not null)
@@ -50,7 +50,7 @@
 }
 
 @code {
-	string _code = "";
+	readonly CountryRequest _request = new() { CodeInput = "" };
 	string? _errorMessage;
 	CountryResponse? _response;
 	Guid? _bakedId;
@@ -61,33 +61,35 @@
 		_response = null;
 		_bakedId = null;
 
-		var outcome = await ReferenceService.GetCountry(new() { Code = _code }, CancellationToken);
+		// The stamp is the client's own verdict, minted by the buffer's setter on every edit —
+		// unproven input never buys a round trip (the same gate RegisterRequestValidator's cascade
+		// stands on): a malformed code renders locally and the wire never hears about it.
+		if (!_request.Code.TryGetValue(out Success<IsoCountryCode> parsed))
+		{
+			_errorMessage = $"'{_request.CodeInput}' is not a recognized ISO 3166-1 code.";
+			return;
+		}
+
+		var outcome = await ReferenceService.GetCountry(_request, CancellationToken);
 
 		if (outcome.TryGetValue(out Failed failed))
 		{
 			_errorMessage = failed.Problem.Category switch
 			{
-				ErrorCategory.Validation => $"'{_code}' is not a recognized ISO 3166-1 code.",
-				ErrorCategory.NotFound => $"'{_code}' parsed, but no seeded country matches it.",
-				_ => "The lookup failed.",
+				ErrorCategory.NotFound => $"'{_request.CodeInput}' parsed, but no seeded country matches it.",
+				_ => "The lookup failed."
 			};
 			return;
 		}
 
 		_response = outcome.Match(static response => response, static _ => null!);
 
-		// The wire response carries no numeric code, deliberately (CountryResponse's shape is fixed
-		// wire law) -- re-parsing the same user-typed code through the same generated IsoCountryCodes
-		// parser the server used yields the exact IsoCountryCode CountryQueryHandler resolved
-		// server-side, so looking its Id up in Iso3166.Ids -- Reference.Data.Contracts' own
-		// precomputed dataset, browser-safe by charter -- proves the wire result matches the
-		// client's own baked-in copy of the same row. The client never recomputes the identifier
-		// itself: Norse.Reference.Data.Namespaces (and the DeterministicGuid derivation it feeds)
-		// is server/tooling/tests-only law -- the browser never computes what Primitives already bakes.
-		if (IsoCountryCodes.Parse(_code).TryGetValue(out Success<IsoCountryCode> success) &&
-			Iso3166.Ids.TryGetValue(success.Value, out Guid bakedId))
-		{
-			_bakedId = bakedId;
-		}
+		// The stamp already carries the proven code, so the baked check is a straight dictionary
+		// read — no re-parse, no second format authority: Iso3166.Ids is Reference.Data.Contracts'
+		// own precomputed dataset, browser-safe by charter, and the wire result must land on the
+		// identical value. The client never recomputes the identifier itself: Reference.Data.Namespaces
+		// (and the DeterministicGuid derivation it feeds) is server/tooling/tests-only law — the
+		// browser never computes what the contracts surface already bakes.
+		_bakedId = Iso3166.Ids[parsed.Value];
 	}
 }
