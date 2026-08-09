@@ -12,19 +12,29 @@ public sealed class CountryQueryHandlerTests
 	async Task A_parseable_code_resolves_the_id_locally_and_projects_from_the_repository()
 	{
 		var expectedId = Iso3166.Ids[IsoCountryCode.UnitedStatesOfAmerica];
-		var expectedResponse = new CountryResponse { Id = expectedId, Alpha2 = "US", Alpha3 = "USA", Name = "United States of America" };
+		var expectedResponse = new CountryResponse
+		{
+			Id = expectedId,
+			Alpha2 = "US",
+			Alpha3 = "USA",
+			Name = "United States of America",
+			Code = IsoCountryCode.UnitedStatesOfAmerica,
+			Classification = Classification.None
+		};
 		var repository = Substitute.For<IReadRepository<CountryOrAreaView>>();
-		repository.GetAsync(expectedId, Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(), Arg.Any<CancellationToken>())
+		repository.GetAsync(expectedId, Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(),
+				Arg.Any<CancellationToken>())
 			.Returns(Outcome<CountryResponse>.Ok(expectedResponse));
 		CountryQueryHandler handler = new(repository);
 
-		var outcome = await handler.Handle(new CountryQuery("US"), TestContext.Current.CancellationToken);
+		var outcome = await handler.Handle(new CountryQuery(IsoCountryCodes.Parse("US")), TestContext.Current.CancellationToken);
 
 		outcome.TryGetValue(out Success<CountryResponse> success).ShouldBeTrue();
 		success.Value.ShouldBe(expectedResponse);
 		// Zero DB involvement in identity resolution: the exact id below is Iso3166.Ids' locally
 		// computed value, never anything the repository itself produced or validated.
-		await repository.Received(1).GetAsync(expectedId, Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(), Arg.Any<CancellationToken>());
+		await repository.Received(1).GetAsync(expectedId,
+			Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(), Arg.Any<CancellationToken>());
 	}
 
 	[Fact]
@@ -33,13 +43,31 @@ public sealed class CountryQueryHandlerTests
 		var repository = Substitute.For<IReadRepository<CountryOrAreaView>>();
 		CountryQueryHandler handler = new(repository);
 
-		var outcome = await handler.Handle(new CountryQuery("banana"), TestContext.Current.CancellationToken);
+		var outcome = await handler.Handle(new CountryQuery(IsoCountryCodes.Parse("banana")), TestContext.Current.CancellationToken);
 
 		outcome.TryGetValue(out Failed failed).ShouldBeTrue();
 		failed.Problem.Category.ShouldBe(ErrorCategory.Validation);
 		failed.Problem.Errors["code"].ShouldContain("banana");
 		await repository.DidNotReceive().GetAsync(
-			Arg.Any<Guid>(), Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(), Arg.Any<CancellationToken>());
+			Arg.Any<Guid>(), Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(),
+			Arg.Any<CancellationToken>());
+	}
+
+	[Fact]
+	async Task A_default_stamp_fails_validation_without_touching_the_repository()
+	{
+		// A hostile or absent wire value deserializes to a default Result<IsoCountryCode> — the
+		// server's own verdict answers it as validation failure before any identity resolution.
+		var repository = Substitute.For<IReadRepository<CountryOrAreaView>>();
+		CountryQueryHandler handler = new(repository);
+
+		var outcome = await handler.Handle(new CountryQuery(default), TestContext.Current.CancellationToken);
+
+		outcome.TryGetValue(out Failed failed).ShouldBeTrue();
+		failed.Problem.Category.ShouldBe(ErrorCategory.Validation);
+		await repository.DidNotReceive().GetAsync(
+			Arg.Any<Guid>(), Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(),
+			Arg.Any<CancellationToken>());
 	}
 
 	[Fact]
@@ -47,11 +75,12 @@ public sealed class CountryQueryHandlerTests
 	{
 		var expectedId = Iso3166.Ids[IsoCountryCode.UnitedStatesOfAmerica];
 		var repository = Substitute.For<IReadRepository<CountryOrAreaView>>();
-		repository.GetAsync(expectedId, Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(), Arg.Any<CancellationToken>())
+		repository.GetAsync(expectedId, Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(),
+				Arg.Any<CancellationToken>())
 			.Returns(Outcome<CountryResponse>.Err(ErrorCategory.NotFound));
 		CountryQueryHandler handler = new(repository);
 
-		var outcome = await handler.Handle(new CountryQuery("US"), TestContext.Current.CancellationToken);
+		var outcome = await handler.Handle(new CountryQuery(IsoCountryCodes.Parse("US")), TestContext.Current.CancellationToken);
 
 		outcome.TryGetValue(out Failed failed).ShouldBeTrue();
 		failed.Problem.Category.ShouldBe(ErrorCategory.NotFound);

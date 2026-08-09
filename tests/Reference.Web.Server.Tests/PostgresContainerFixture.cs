@@ -23,5 +23,6 @@ public sealed class PostgresContainerFixture : IAsyncLifetime
 }
 
 [CollectionDefinition("Postgres")]
-[SuppressMessage("Design", "CA1711:Identifiers should not have incorrect suffix", Justification = "xUnit collection fixture naming convention")]
+[SuppressMessage("Design", "CA1711:Identifiers should not have incorrect suffix",
+	Justification = "xUnit collection fixture naming convention")]
 public sealed class PostgresCollection : ICollectionFixture<PostgresContainerFixture>;

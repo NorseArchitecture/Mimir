@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<PropertyGroup>
+		<Description>Norse.Reference.Components.FluentUI: the FluentUI Blazor v5 rendering of the reference-data components — CountryLookup and everything after it that carries FluentUI markup. Follows Heimdall's vendor split: the headless Reference.Components is the shared home; a host opts into this assembly by picking its component vendor (FluentUI is currently the only one). Routes are discovered from the reference closure at compile time by Midgard's AddNorseClientComponents() generator; no per-host registration edit exists.</Description>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="5.*-*" />
+		<ProjectReference Include="../Reference.Components/Reference.Components.csproj" />
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+</Project>

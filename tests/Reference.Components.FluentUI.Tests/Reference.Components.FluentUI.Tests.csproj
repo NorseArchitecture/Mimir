@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<ItemGroup>
+		<PackageReference Include="bunit" Version="*" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.*-*" />
+		<ProjectReference Include="../../src/Reference.Components.FluentUI/Reference.Components.FluentUI.csproj" />
+	</ItemGroup>
+</Project>
