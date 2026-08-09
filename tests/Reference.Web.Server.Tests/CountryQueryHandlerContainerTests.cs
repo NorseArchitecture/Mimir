@@ -91,6 +91,9 @@ public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture f
 			(isOk ? "OK" : isFailed ? $"FAILED:{failed.Problem.Category}" : "?").ShouldBe("OK");
 			success.Value.Alpha2.ShouldBe("US");
 			success.Value.Id.ShouldBe(id);
+			success.Value.Code.ShouldBe(IsoCountryCode.UnitedStatesOfAmerica);
+			success.Value.Classification.ShouldBe(Classification.None);
+			success.Value.Region.ShouldBeNull();
 		}
 		finally
 		{
@@ -160,6 +163,96 @@ public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture f
 			var isFailed = outcome.TryGetValue(out Failed failed);
 			(isOk ? "OK" : isFailed ? $"FAILED:{failed.Problem.Category}" : "?").ShouldBe("OK");
 			success.Value.Id.ShouldBe(id);
+			// The dig itself: the owned-JSON ancestry projects out SQL-side, level by level.
+			success.Value.Region.ShouldNotBeNull();
+			success.Value.Region.Name.ShouldBe("Americas");
+			success.Value.Region.Id.ShouldBe((Guid)regionId);
+			success.Value.Region.Subregion.ShouldNotBeNull();
+			success.Value.Region.Subregion.Name.ShouldBe("Northern America");
+			success.Value.Region.Subregion.IntermediateRegion.ShouldBeNull();
+		}
+		finally
+		{
+			await using var context = await seedFactory.CreateDbContextAsync(cancellationToken);
+			await context.Set<CountryOrArea>().Where(c => c.Id == id).ExecuteDeleteAsync(cancellationToken);
+		}
+	}
+
+	[Fact]
+	async Task A_three_level_hierarchy_with_classification_flags_digs_out_whole()
+	{
+		var cancellationToken = TestContext.Current.CancellationToken;
+		var repository = await BuildRepositoryAsync(fixture.ConnectionString, cancellationToken);
+
+		// Haiti is the real seed data's deepest shape: LDC + SIDS in combination (the flags-enum
+		// exercise) and the full Region(Americas)/Subregion(Latin America and the Caribbean)/
+		// IntermediateRegion(Caribbean) chain.
+		DeterministicGuid
+			id = new(Iso3166.Ids[IsoCountryCode.Haiti]),
+			regionId = new(DeterministicGuid.Namespaces.Dns, "019"),
+			subregionId = new(DeterministicGuid.Namespaces.Dns, "419"),
+			intermediateId = new(DeterministicGuid.Namespaces.Dns, "029");
+		ServiceCollection seedServices = new();
+		seedServices.AddDbContextFactory<ReferenceDbContext>(o =>
+		{
+			o.UseNpgsql(fixture.ConnectionString);
+			o.ApplyNorseConventions(NorseNameRewriters.LowerSnakeCase);
+			o.ApplyNorseTrackingBehavior();
+		});
+		var seedFactory = seedServices.BuildServiceProvider()
+			.GetRequiredService<IDbContextFactory<ReferenceDbContext>>();
+		const Classification HaitiFlags =
+			Classification.LeastDevelopedCountry | Classification.SmallIslandDevelopingState;
+		await using (var context = await seedFactory.CreateDbContextAsync(cancellationToken))
+		{
+			context.Set<CountryOrArea>().Add(new()
+			{
+				Id = id,
+				Code = IsoCountryCode.Haiti,
+				Alpha2 = "HT",
+				Alpha3 = "HTI",
+				Name = "Haiti",
+				Classification = HaitiFlags,
+				View = new()
+				{
+					Id = id,
+					Code = IsoCountryCode.Haiti,
+					Alpha2 = "HT",
+					Alpha3 = "HTI",
+					Name = "Haiti",
+					Classification = HaitiFlags,
+					Region = new()
+					{
+						Id = regionId,
+						Code = "019",
+						Name = "Americas",
+						Subregion = new()
+						{
+							Id = subregionId,
+							Code = "419",
+							Name = "Latin America and the Caribbean",
+							IntermediateRegion = new() { Id = intermediateId, Code = "029", Name = "Caribbean" }
+						}
+					}
+				}
+			});
+			await context.SaveChangesAsync(cancellationToken);
+		}
+
+		try
+		{
+			CountryQueryHandler handler = new(repository);
+			var outcome = await handler.Handle(new CountryQuery(IsoCountryCodes.Parse("HTI")), cancellationToken);
+
+			var isOk = outcome.TryGetValue(out Success<CountryResponse> success);
+			var isFailed = outcome.TryGetValue(out Failed failed);
+			(isOk ? "OK" : isFailed ? $"FAILED:{failed.Problem.Category}" : "?").ShouldBe("OK");
+			success.Value.Classification.ShouldBe(HaitiFlags);
+			success.Value.Region.ShouldNotBeNull();
+			success.Value.Region.Subregion.ShouldNotBeNull();
+			success.Value.Region.Subregion.IntermediateRegion.ShouldNotBeNull();
+			success.Value.Region.Subregion.IntermediateRegion.Name.ShouldBe("Caribbean");
+			success.Value.Region.Subregion.IntermediateRegion.Id.ShouldBe((Guid)intermediateId);
 		}
 		finally
 		{

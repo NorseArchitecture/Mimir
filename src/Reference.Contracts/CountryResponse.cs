@@ -2,7 +2,11 @@ using System.Runtime.Serialization;
 
 namespace Norse.Reference;
 
-/// <summary>The resolved country: its deterministic identity plus the canonical codes and English name.</summary>
+/// <summary>
+///     The resolved country: its deterministic identity, the canonical codes and English name, the UN
+///     classification flags, and the full M49 ancestry chain — the entire
+///     <c>CountryOrAreaView</c> document, not a scalar skim.
+/// </summary>
 [DataContract]
 public sealed record CountryResponse
 {
@@ -25,4 +29,16 @@ public sealed record CountryResponse
 	/// <summary>The English short name.</summary>
 	[DataMember(Order = 4)]
 	public required string Name { get; init; }
+
+	/// <summary>The ISO 3166-1 identifier itself — the M49 numeric code as the enum's underlying value.</summary>
+	[DataMember(Order = 5)]
+	public required IsoCountryCode Code { get; init; }
+
+	/// <summary>The UN classification flags this country or area holds.</summary>
+	[DataMember(Order = 6)]
+	public required Classification Classification { get; init; }
+
+	/// <summary>The ancestor Region chain, if the country resolves through one — absent only for Antarctica.</summary>
+	[DataMember(Order = 7)]
+	public RegionResponse? Region { get; init; }
 }

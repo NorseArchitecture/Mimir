@@ -7,9 +7,9 @@
 <h1>Country Lookup</h1>
 
 <p>
-	Resolves a country by any ISO 3166-1 code form (alpha-2, alpha-3, or numeric — padded or
-	unpadded) over the wire, then looks the same identifier up locally from
-	<code>Iso3166.Ids</code> to prove the two land on the identical value.
+	Resolves the full country document by any accepted input form (alpha-2, alpha-3, numeric —
+	padded or unpadded — or the baked v5 identifier) over the wire, then looks the same identifier
+	up locally from <code>Iso3166.Ids</code> to prove the two land on the identical value.
 </p>
 
 <FluentTextInput @bind-Value="_request.CodeInput" Label="Code" Placeholder="US, USA, 840, 40..." />
@@ -29,6 +29,15 @@
 		<dd>@_response.Alpha3</dd>
 		<dt>Name</dt>
 		<dd>@_response.Name</dd>
+		<dt>Code</dt>
+		<dd>@_response.Code</dd>
+		<dt>Classification</dt>
+		<dd>@_response.Classification</dd>
+		@if (_response.Region is { } region)
+		{
+			<dt>Ancestry</dt>
+			<dd>@Ancestry(region)</dd>
+		}
 		<dt>Wire Id</dt>
 		<dd>@_response.Id</dd>
 	</dl>
@@ -91,5 +100,17 @@
 		// (and the DeterministicGuid derivation it feeds) is server/tooling/tests-only law — the
 		// browser never computes what the contracts surface already bakes.
 		_bakedId = Iso3166.Ids[parsed.Value];
+	}
+
+	static string Ancestry(RegionResponse region)
+	{
+		List<string> names = [region.Name];
+		if (region.Subregion is { } subregion)
+		{
+			names.Add(subregion.Name);
+			if (subregion.IntermediateRegion is { } intermediate)
+				names.Add(intermediate.Name);
+		}
+		return string.Join(" → ", names);
 	}
 }

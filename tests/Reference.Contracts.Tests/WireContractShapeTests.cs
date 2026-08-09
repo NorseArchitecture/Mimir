@@ -9,6 +9,9 @@ public sealed class WireContractShapeTests
 	[Theory]
 	[InlineData(typeof(CountryRequest))]
 	[InlineData(typeof(CountryResponse))]
+	[InlineData(typeof(RegionResponse))]
+	[InlineData(typeof(SubregionResponse))]
+	[InlineData(typeof(IntermediateRegionResponse))]
 	void Wire_records_carry_data_contract_with_unique_ordered_members(Type wireType)
 	{
 		wireType.GetCustomAttribute<DataContractAttribute>().ShouldNotBeNull();

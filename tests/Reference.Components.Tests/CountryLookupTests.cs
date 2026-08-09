@@ -58,7 +58,21 @@ public sealed class CountryLookupTests : BunitContext
 				Id = bakedId,
 				Alpha2 = "US",
 				Alpha3 = "USA",
-				Name = "United States of America"
+				Name = "United States of America",
+				Code = IsoCountryCode.UnitedStatesOfAmerica,
+				Classification = Classification.None,
+				Region = new RegionResponse
+				{
+					Id = Guid.NewGuid(),
+					Code = "019",
+					Name = "Americas",
+					Subregion = new SubregionResponse
+					{
+						Id = Guid.NewGuid(),
+						Code = "021",
+						Name = "Northern America"
+					}
+				}
 			})));
 		Services.AddSingleton(service);
 
@@ -68,6 +82,7 @@ public sealed class CountryLookupTests : BunitContext
 
 		component.Markup.ShouldContain("USA");
 		component.Markup.ShouldContain("United States of America");
+		component.Markup.ShouldContain("Americas → Northern America");
 		component.Markup.ShouldContain(bakedId.ToString());
 		// The wire id and the client's own baked copy of the same row land identical — the demo's
 		// whole point, now read straight off the proven stamp with no client-side re-parse.

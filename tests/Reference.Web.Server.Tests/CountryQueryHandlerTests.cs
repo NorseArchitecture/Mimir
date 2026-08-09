@@ -17,7 +17,9 @@ public sealed class CountryQueryHandlerTests
 			Id = expectedId,
 			Alpha2 = "US",
 			Alpha3 = "USA",
-			Name = "United States of America"
+			Name = "United States of America",
+			Code = IsoCountryCode.UnitedStatesOfAmerica,
+			Classification = Classification.None
 		};
 		var repository = Substitute.For<IReadRepository<CountryOrAreaView>>();
 		repository.GetAsync(expectedId, Arg.Any<Expression<Func<CountryOrAreaView, CountryResponse>>>(),

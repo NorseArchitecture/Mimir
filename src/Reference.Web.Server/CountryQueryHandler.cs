@@ -29,9 +29,40 @@ sealed class CountryQueryHandler(IReadRepository<CountryOrAreaView> repository)
 				new Dictionary<string, string[]> { ["code"] = [input] }));
 		}
 
+		// The whole owned document digs out in one SQL-side projection — scalars, flags, and the
+		// nullable three-level ancestry chain; expression trees have no null-propagation operator,
+		// so each level guards explicitly.
 		return new(repository.GetAsync(
 			Iso3166.Ids[success.Value],
-			v => new CountryResponse { Id = v.Id, Alpha2 = v.Alpha2, Alpha3 = v.Alpha3, Name = v.Name },
+			v => new CountryResponse
+			{
+				Id = v.Id,
+				Alpha2 = v.Alpha2,
+				Alpha3 = v.Alpha3,
+				Name = v.Name,
+				Code = v.Code,
+				Classification = v.Classification,
+				Region = v.Region == null ? null : new RegionResponse
+				{
+					Id = v.Region.Id,
+					Code = v.Region.Code,
+					Name = v.Region.Name,
+					Subregion = v.Region.Subregion == null ? null : new SubregionResponse
+					{
+						Id = v.Region.Subregion.Id,
+						Code = v.Region.Subregion.Code,
+						Name = v.Region.Subregion.Name,
+						IntermediateRegion = v.Region.Subregion.IntermediateRegion == null
+							? null
+							: new IntermediateRegionResponse
+							{
+								Id = v.Region.Subregion.IntermediateRegion.Id,
+								Code = v.Region.Subregion.IntermediateRegion.Code,
+								Name = v.Region.Subregion.IntermediateRegion.Name
+							}
+					}
+				}
+			},
 			cancellationToken));
 	}
 }

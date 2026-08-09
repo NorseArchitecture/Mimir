@@ -27,7 +27,11 @@ namespace Norse.Reference;
 [ServiceContract(Name = "grpc.reference.v1.ReferenceService")]
 public interface IReferenceService
 {
-	/// <summary>Resolves a country by any of its three ISO 3166-1 code forms.</summary>
+	/// <summary>
+	///     Resolves the full country document — codes, name, classification flags, and the M49
+	///     ancestry chain — by any of the four accepted input forms: ISO 3166-1 alpha-2, alpha-3,
+	///     M49 numeric (padded or unpadded), or the baked deterministic v5 identifier.
+	/// </summary>
 	[OperationContract]
 	Task<Outcome<CountryResponse>> GetCountry(CountryRequest request, CancellationToken cancellationToken = default);
 }
