@@ -26,11 +26,10 @@ public sealed class CountriesController(IReferenceService referenceService) : Gr
 	///     alpha-2, alpha-3, M49 numeric (padded or unpadded), or the baked deterministic v5 identifier.
 	/// </summary>
 	/// <param name="code">The country code or identifier, in any accepted form.</param>
-	/// <param name="cancellationToken">Cancels the in-process operation.</param>
 	/// <returns>200 with the resolved document; 404 when no seeded country matches; 400 problem details for unrecognized input.</returns>
 	[HttpGet("{code}")]
 	[Authorize(Policy = ReferencePolicies.Public)]
-	public Task<ActionResult<CountryResponse>> GetCountry(string code, CancellationToken cancellationToken) =>
+	public Task<ActionResult<CountryResponse>> GetCountry(string code) =>
 		FoldAsync(new ValueTask<Outcome<CountryResponse>>(
-			referenceService.GetCountry(new() { CodeInput = code }, cancellationToken)));
+			referenceService.GetCountry(new() { CodeInput = code }, HttpContext.RequestAborted)));
 }

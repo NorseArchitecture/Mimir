@@ -7,17 +7,31 @@ namespace Norse.Reference.Web.Server.Tests;
 
 public sealed class CountriesControllerTests
 {
+	// The action reads HttpContext.RequestAborted (and the validation fold reads
+	// ProblemDetailsFactory off request services), so every bare controller gets the minimal
+	// context — with the test framework's own token standing in as the aborted-request signal, so
+	// cancellation keeps flowing end to end exactly as it did when the action took a parameter.
+	static CountriesController Build(IReferenceService service) => new(service)
+	{
+		ControllerContext = new ControllerContext
+		{
+			HttpContext = new DefaultHttpContext { RequestAborted = TestContext.Current.CancellationToken }
+		}
+	};
+
 	[Fact]
 	async Task The_route_bound_code_hydrates_the_request_buffer_and_the_stamp_mints_on_assignment()
 	{
 		CountryRequest? seen = null;
+		CancellationToken seenToken = default;
 		var service = Substitute.For<IReferenceService>();
-		service.GetCountry(Arg.Do<CountryRequest>(r => seen = r), Arg.Any<CancellationToken>())
+		service.GetCountry(Arg.Do<CountryRequest>(r => seen = r),
+				Arg.Do<CancellationToken>(t => seenToken = t))
 			.Returns(Task.FromResult<Outcome<CountryResponse>>(new Failed(
 				Problem.ModelError(ErrorCategory.NotFound, "No row."))));
-		CountriesController controller = new(service);
+		var controller = Build(service);
 
-		await controller.GetCountry("US", TestContext.Current.CancellationToken);
+		await controller.GetCountry("US");
 
 		// The facade is a dumb door: it assigns the buffer (the parse event) and forwards — the
 		// stamp must arrive at the service already minted, verdict and all.
@@ -25,6 +39,9 @@ public sealed class CountriesControllerTests
 		seen.CodeInput.ShouldBe("US");
 		seen.Code.TryGetValue(out Success<IsoCountryCode> parsed).ShouldBeTrue();
 		parsed.Value.ShouldBe(IsoCountryCode.UnitedStatesOfAmerica);
+		// And the token the service saw is HttpContext.RequestAborted, not None — the action's
+		// switch off the parameter didn't sever cancellation.
+		seenToken.ShouldBe(controller.HttpContext.RequestAborted);
 	}
 
 	[Fact]
@@ -42,9 +59,9 @@ public sealed class CountriesControllerTests
 		var service = Substitute.For<IReferenceService>();
 		service.GetCountry(Arg.Any<CountryRequest>(), Arg.Any<CancellationToken>())
 			.Returns(Task.FromResult(Outcome<CountryResponse>.Ok(response)));
-		CountriesController controller = new(service);
+		var controller = Build(service);
 
-		var result = await controller.GetCountry("US", TestContext.Current.CancellationToken);
+		var result = await controller.GetCountry("US");
 
 		var ok = result.Result.ShouldBeOfType<OkObjectResult>();
 		ok.Value.ShouldBe(response);
@@ -57,9 +74,9 @@ public sealed class CountriesControllerTests
 		service.GetCountry(Arg.Any<CountryRequest>(), Arg.Any<CancellationToken>())
 			.Returns(Task.FromResult<Outcome<CountryResponse>>(new Failed(
 				Problem.ModelError(ErrorCategory.NotFound, "No row."))));
-		CountriesController controller = new(service);
+		var controller = Build(service);
 
-		var result = await controller.GetCountry("XX", TestContext.Current.CancellationToken);
+		var result = await controller.GetCountry("XX");
 
 		result.Result.ShouldBeOfType<NotFoundResult>();
 	}
@@ -71,14 +88,9 @@ public sealed class CountriesControllerTests
 		service.GetCountry(Arg.Any<CountryRequest>(), Arg.Any<CancellationToken>())
 			.Returns(Task.FromResult(Outcome<CountryResponse>.Err(ErrorCategory.Validation,
 				new Dictionary<string, string[]> { ["code"] = ["banana"] })));
-		CountriesController controller = new(service)
-		{
-			// ControllerBase.Problem reads ProblemDetailsFactory off the request services; a bare
-			// controller has no HttpContext, so give it the minimal one.
-			ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
-		};
+		var controller = Build(service);
 
-		var result = await controller.GetCountry("banana", TestContext.Current.CancellationToken);
+		var result = await controller.GetCountry("banana");
 
 		var problemResult = result.Result.ShouldBeOfType<ObjectResult>();
 		problemResult.StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
