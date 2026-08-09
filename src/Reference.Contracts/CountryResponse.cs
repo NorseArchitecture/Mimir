@@ -6,15 +6,22 @@ namespace Norse.Reference;
 [DataContract]
 public sealed record CountryResponse
 {
-	/// <summary>The deterministic v5 identifier — precomputed at generation time from the ISO 3166-1 dataset namespace (<c>ReferenceNamespaces.Iso3166</c>, published by Norse.Reference.Data.Namespaces) and the zero-padded numeric code. Recomputation is a server/tooling/tests act, never the client's.</summary>
+	/// <summary>
+	///     The deterministic v5 identifier — precomputed at generation time from the ISO 3166-1 dataset namespace (
+	///     <c>ReferenceNamespaces.Iso3166</c>, published by Norse.Reference.Data.Namespaces) and the zero-padded numeric code.
+	///     Recomputation is a server/tooling/tests act, never the client's.
+	/// </summary>
 	[DataMember(Order = 1)]
 	public required Guid Id { get; init; }
+
 	/// <summary>The ISO 3166-1 alpha-2 code.</summary>
 	[DataMember(Order = 2)]
 	public required string Alpha2 { get; init; }
+
 	/// <summary>The ISO 3166-1 alpha-3 code.</summary>
 	[DataMember(Order = 3)]
 	public required string Alpha3 { get; init; }
+
 	/// <summary>The English short name.</summary>
 	[DataMember(Order = 4)]
 	public required string Name { get; init; }

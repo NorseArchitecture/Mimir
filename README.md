@@ -6,11 +6,42 @@
 
 *Image credit: [@norsemythologyclips](https://www.instagram.com/norsemythologyclips/) — go follow them.*
 
-The serving layer for the Norse Architecture's reference data — **`Norse.Reference.Components`**, **`.Web.Server`**, and **`.Worker`**: Blazor components, the gRPC service host, and the background worker that keeps ISO/IANA data current. Nobody needs the well itself to get an answer — they need Mímir's head, wherever it's carried, which is exactly what this realm does against [Mímisbrunnr](https://github.com/NorseArchitecture/Mimisbrunnr)'s data. In the dependency chain it rides on Mímisbrunnr's entities and view models, and on Yggdrasil below that.
+The serving layer for the Norse Architecture's reference data — **`Norse.Reference.Components`**, **`.Web.Server`**, and **`.Worker`**: Blazor components, the gRPC service host, and the background worker that keeps ISO/IANA data current. Nobody needs the well itself to get an answer — they need Mímir's head, wherever it's carried, which is exactly what this realm does against [Mímisbrunnr](https://github.com/NorseArchitecture/Mimisbrunnr)'s data. In the dependency chain it rides on Mímisbrunnr's published surfaces and Asgard's law; Yggdrasil's hosts ride on *it* in turn.
+
+## The dependency graph
+
+Arrows point at the thing depended on. The two wells render as separate subgraphs but share one namespace root (`Norse.Reference`) deliberately — one bounded context, two repositories, split for release cadence alone. Non-Norse packages (FluentUI) are off the chart by convention.
+
+```mermaid
+flowchart BT
+	subgraph Mimir["Mímir — Norse.Reference"]
+		Components["Reference.Components"]
+		WebServer["Reference.Web.Server"]
+		Contracts["Reference.Contracts"]
+	end
+	subgraph Asgard
+		AComponents["Abstractions.Components"]
+		WebServerLaw["Abstractions.Web.Server"]
+		AContracts["Abstractions.Contracts"]
+	end
+	subgraph Mimisbrunnr["Mímisbrunnr — Norse.Reference.Data"]
+		DataContracts["Reference.Data.Contracts"]
+		DataEF["Reference.Data.EntityFramework"]
+	end
+	Components --> Contracts
+	Components --> AComponents
+	WebServer --> Contracts
+	WebServer --> WebServerLaw
+	WebServer --> DataEF
+	Contracts --> AContracts
+	Contracts --> DataContracts
+```
+
+Dependencies are transitive-first by house law — the browser-safe baked surface (`Reference.Data.Contracts`) reaches `Reference.Components` through `Reference.Contracts`, so no direct edge exists; `Reference.Web.Server` is the one project touching the entity side (`Reference.Data.EntityFramework`), and NORSE073 guarantees `Reference.Components` never can.
 
 ## Status
 
-Mímir is the serving layer: **`Reference.Contracts`** (the wire records — `CountryRequest`/`CountryResponse`/`IReferenceService`) and **`Reference.Web.Server`** (the gRPC implementation, bound into Yggdrasil's hosting process). The generated reference surface — the `IsoCountryCode` enum, the `Iso3166` dataset, and `ReferenceNamespaces` — now generates in [Mímisbrunnr](https://github.com/NorseArchitecture/Mimisbrunnr) (`Reference.Data.Primitives`/`.Namespaces`) and arrives here by reference instead of by generation. `Reference.Seeds` is deleted; the canonical seed content lives in Mímisbrunnr.
+Mímir is the serving layer: **`Reference.Contracts`** (the wire records — `CountryRequest`/`CountryResponse`/`IReferenceService`), **`Reference.Web.Server`** (the gRPC implementation, bound into Yggdrasil's hosting process), and **`Reference.Components`** (routable Blazor components over the wire contract — `CountryLookup`, migrated home from Yggdrasil's `Hosting.Web.Components`, discovered by any referencing host's compile-time route discovery). The generated reference surface — the `IsoCountryCode` enum, the `Iso3166` dataset, and `ReferenceNamespaces` — now generates in [Mímisbrunnr](https://github.com/NorseArchitecture/Mimisbrunnr) (`Reference.Data.Contracts`/`.Namespaces`) and arrives here by reference instead of by generation. `Reference.Seeds` is deleted; the canonical seed content lives in Mímisbrunnr.
 
 ## Why two repos
 

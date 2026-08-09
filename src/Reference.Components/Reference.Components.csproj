@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<PropertyGroup>
+		<Description>Norse.Reference.Components: routable Blazor components over the IReferenceService wire contract — CountryLookup (migrated home from Yggdrasil's Hosting.Web.Components, where it was staged as a template page), injecting the contract directly (transport-dumb; each host registers its own implementation via DI) and proving wire results against Reference.Data.Contracts' browser-safe baked surface (IsoCountryCodes/Iso3166), which flows transitively through Reference.Contracts — never referenced directly. Any host that references this assembly gets its routes discovered at compile time by Midgard's AddNorseClientComponents() generator; no per-host registration edit exists.</Description>
+	</PropertyGroup>
+	<ItemGroup>
+		<NorseRef Include="Abstractions.Components">
+			<Repo>Asgard</Repo>
+		</NorseRef>
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="5.*-*" />
+		<ProjectReference Include="../Reference.Contracts/Reference.Contracts.csproj" />
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+</Project>

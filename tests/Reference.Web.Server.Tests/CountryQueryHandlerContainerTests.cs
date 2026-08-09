@@ -11,15 +11,16 @@ using Norse.Reference.Data.EntityFramework;
 namespace Norse.Reference.Web.Server.Tests;
 
 /// <summary>
-/// Exercises the real well-repository query path (Midgard's <c>Repository&lt;TContext,TEntity,TView&gt;</c>,
-/// <c>ViewSelector</c>/<c>WellMap</c>) against a real Postgres container, with zero gRPC/mediator
-/// pipeline/Yggdrasil composition in the loop -- isolates whether a resolvable, well-formed row round
-/// trips through <see cref="CountryQueryHandler"/> at all before any wire-level suspicion is warranted.
+///     Exercises the real well-repository query path (Midgard's <c>Repository&lt;TContext,TEntity,TView&gt;</c>,
+///     <c>ViewSelector</c>/<c>WellMap</c>) against a real Postgres container, with zero gRPC/mediator
+///     pipeline/Yggdrasil composition in the loop -- isolates whether a resolvable, well-formed row round
+///     trips through <see cref="CountryQueryHandler" /> at all before any wire-level suspicion is warranted.
 /// </summary>
 [Collection("Postgres")]
 public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture fixture)
 {
-	static async Task<IReadRepository<CountryOrAreaView>> BuildRepositoryAsync(string connectionString, CancellationToken cancellationToken)
+	static async Task<IReadRepository<CountryOrAreaView>> BuildRepositoryAsync(string connectionString,
+		CancellationToken cancellationToken)
 	{
 		ServiceCollection services = new();
 		services.AddDbContextFactory<ReferenceDbContext>(o =>
@@ -55,7 +56,8 @@ public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture f
 			o.ApplyNorseConventions(NorseNameRewriters.LowerSnakeCase);
 			o.ApplyNorseTrackingBehavior();
 		});
-		var seedFactory = seedServices.BuildServiceProvider().GetRequiredService<IDbContextFactory<ReferenceDbContext>>();
+		var seedFactory = seedServices.BuildServiceProvider()
+			.GetRequiredService<IDbContextFactory<ReferenceDbContext>>();
 		await using (var context = await seedFactory.CreateDbContextAsync(cancellationToken))
 		{
 			context.Set<CountryOrArea>().Add(new()
@@ -73,8 +75,8 @@ public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture f
 					Alpha2 = "US",
 					Alpha3 = "USA",
 					Name = "United States of America",
-					Classification = Classification.None,
-				},
+					Classification = Classification.None
+				}
 			});
 			await context.SaveChangesAsync(cancellationToken);
 		}
@@ -117,7 +119,8 @@ public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture f
 			o.ApplyNorseConventions(NorseNameRewriters.LowerSnakeCase);
 			o.ApplyNorseTrackingBehavior();
 		});
-		var seedFactory = seedServices.BuildServiceProvider().GetRequiredService<IDbContextFactory<ReferenceDbContext>>();
+		var seedFactory = seedServices.BuildServiceProvider()
+			.GetRequiredService<IDbContextFactory<ReferenceDbContext>>();
 		await using (var context = await seedFactory.CreateDbContextAsync(cancellationToken))
 		{
 			context.Set<CountryOrArea>().Add(new()
@@ -141,9 +144,9 @@ public sealed class CountryQueryHandlerContainerTests(PostgresContainerFixture f
 						Id = regionId,
 						Code = "019",
 						Name = "Americas",
-						Subregion = new() { Id = subregionId, Code = "021", Name = "Northern America" },
-					},
-				},
+						Subregion = new() { Id = subregionId, Code = "021", Name = "Northern America" }
+					}
+				}
 			});
 			await context.SaveChangesAsync(cancellationToken);
 		}

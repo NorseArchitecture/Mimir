@@ -10,7 +10,7 @@
 		<NorseRef Include="Abstractions.Contracts">
 			<Repo>Asgard</Repo>
 		</NorseRef>
-		<NorseRef Include="Reference.Data.Primitives">
+		<NorseRef Include="Reference.Data.Contracts">
 			<Repo>Mimisbrunnr</Repo>
 		</NorseRef>
 		<!-- Overrides a known-vulnerable transitive version pulled in by System.ServiceModel.Primitives —
