@@ -14,6 +14,7 @@
 		<File Path="src/Directory.Build.props" />
 		<File Path="src/Directory.Build.targets" />
 		<Project Path="src/Reference.Components/Reference.Components.csproj" />
+		<Project Path="src/Reference.Components.FluentUI/Reference.Components.FluentUI.csproj" />
 		<Project Path="src/Reference.Contracts/Reference.Contracts.csproj" />
 		<Project Path="src/Reference.Web.Server/Reference.Web.Server.csproj" />
 	</Folder>
@@ -24,7 +25,7 @@
 	<Folder Name="/tests/">
 		<File Path="tests/Directory.Build.props" />
 		<File Path="tests/Directory.Build.targets" />
-		<Project Path="tests/Reference.Components.Tests/Reference.Components.Tests.csproj" />
+		<Project Path="tests/Reference.Components.FluentUI.Tests/Reference.Components.FluentUI.Tests.csproj" />
 		<Project Path="tests/Reference.Contracts.Tests/Reference.Contracts.Tests.csproj" />
 		<Project Path="tests/Reference.Web.Server.Tests/Reference.Web.Server.Tests.csproj" />
 	</Folder>

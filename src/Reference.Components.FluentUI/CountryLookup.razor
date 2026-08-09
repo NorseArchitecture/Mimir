@@ -1,0 +1,93 @@
+@page "/reference/country-lookup"
+@inherits OutcomeFormComponentBase
+@inject IReferenceService ReferenceService
+
+<PageTitle>Country Lookup</PageTitle>
+
+<h1>Country Lookup</h1>
+
+<p>
+	Resolves the full country document by any accepted input form (alpha-2, alpha-3, numeric —
+	padded or unpadded — or the baked v5 identifier) over the wire, then looks the same identifier
+	up locally from <code>Iso3166.Ids</code> to prove the two land on the identical value.
+</p>
+
+<EditForm EditContext="EditContextFor(_request)" OnValidSubmit="HandleLookupAsync" FormName="reference-country-lookup">
+	<FluentValidator/>
+	<ValidationSummary/>
+	<FluentTextInput @bind-Value="_request.CodeInput" Label="Code" Placeholder="US, USA, 840, 40..." Required="true"/>
+	<FluentButton Type="ButtonType.Submit" Appearance="ButtonAppearance.Primary" Disabled="IsSubmitting">Look up</FluentButton>
+</EditForm>
+
+@if (_response is not null)
+{
+	<dl>
+		<dt>Alpha-2</dt>
+		<dd>@_response.Alpha2</dd>
+		<dt>Alpha-3</dt>
+		<dd>@_response.Alpha3</dd>
+		<dt>Name</dt>
+		<dd>@_response.Name</dd>
+		<dt>Code</dt>
+		<dd>@_response.Code</dd>
+		<dt>Classification</dt>
+		<dd>@_response.Classification</dd>
+		@if (_response.Region is { } region)
+		{
+			<dt>Ancestry</dt>
+			<dd>@Ancestry(region)</dd>
+		}
+		<dt>Wire Id</dt>
+		<dd>@_response.Id</dd>
+	</dl>
+
+	@if (_bakedId is { } bakedId)
+	{
+		<p>
+			Client-baked Id: @bakedId
+			@if (bakedId == _response.Id)
+			{
+				<FluentBadge Appearance="BadgeAppearance.Filled">Match</FluentBadge>
+			}
+			else
+			{
+				<FluentBadge Appearance="BadgeAppearance.Outline">Mismatch</FluentBadge>
+			}
+		</p>
+	}
+}
+
+@code {
+	readonly CountryRequest _request = new() { CodeInput = "" };
+	CountryResponse? _response;
+	Guid? _bakedId;
+
+	// The submit seam owns the whole outcome story: Blazilla's field/submit passes gate on the
+	// stamp's rules (unproven input never buys a round trip), a Failed outcome renders into the
+	// form through the server-error bridge, and success lands here. The baked check reads the
+	// wire's own Code back through Iso3166.Ids — Reference.Data.Contracts' precomputed dataset,
+	// browser-safe by charter — and must land on the identical Guid the wire carried: the client
+	// never recomputes the identifier, it only proves the server against the canon it already has.
+	Task HandleLookupAsync(EditContext editContext)
+	{
+		_response = null;
+		_bakedId = null;
+		return SubmitAsync(editContext, ct => ReferenceService.GetCountry(_request, ct), response =>
+		{
+			_response = response;
+			_bakedId = Iso3166.Ids[response.Code];
+		});
+	}
+
+	static string Ancestry(RegionResponse region)
+	{
+		List<string> names = [region.Name];
+		if (region.Subregion is { } subregion)
+		{
+			names.Add(subregion.Name);
+			if (subregion.IntermediateRegion is { } intermediate)
+				names.Add(intermediate.Name);
+		}
+		return string.Join(" → ", names);
+	}
+}
