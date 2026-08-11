@@ -6,7 +6,6 @@
 		<NorseRef Include="Abstractions.Components">
 			<Repo>Asgard</Repo>
 		</NorseRef>
-		<PackageReference Include="Blazilla" Version="2.*" />
 		<ProjectReference Include="../Reference.Contracts/Reference.Contracts.csproj" />
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
