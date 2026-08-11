@@ -12,8 +12,8 @@
 	up locally from <code>Iso3166.Ids</code> to prove the two land on the identical value.
 </p>
 
-<EditForm EditContext="EditContextFor(_request)" OnValidSubmit="HandleLookupAsync" FormName="reference-country-lookup">
-	<FluentValidator/>
+<EditForm EditContext="EditContextFor(_request)" OnSubmit="HandleLookupAsync" FormName="reference-country-lookup">
+	<FormValidator/>
 	<ValidationSummary/>
 	<FluentTextInput @bind-Value="_request.CodeInput" Label="Code" Placeholder="US, USA, 840, 40..." Required="true"/>
 	<FluentButton Type="ButtonType.Submit" Appearance="ButtonAppearance.Primary" Disabled="IsSubmitting">Look up</FluentButton>

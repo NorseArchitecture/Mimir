@@ -5,7 +5,7 @@ namespace Norse.Reference.Components;
 
 /// <summary>
 ///     Validator for <see cref="CountryRequest" /> — the single source of truth for country-lookup
-///     validation, run client-side by Blazilla's <c>FluentValidator</c> so unproven input never buys
+///     validation, run client-side by Asgard's <c>FormValidator</c> so unproven input never buys
 ///     a round trip. THE RULE REGISTERS ON THE STAMP — <see cref="CountryRequest.Code" />, the
 ///     <c>Result&lt;IsoCountryCode&gt;</c> — so every predicate reads the parsed verdict: the
 ///     generated quad-form parser owns format truth, this class owns business truth, no rule exists
