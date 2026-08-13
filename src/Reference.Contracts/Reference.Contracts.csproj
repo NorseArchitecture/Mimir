@@ -5,6 +5,7 @@
 		     surface (the shared-namespace convention between the two reference realms); this
 		     override keeps IDE0130's folder-match expectation aligned with that namespace. -->
 		<RootNamespace>Norse.Reference</RootNamespace>
+		<NorseFrontendPlatforms>All</NorseFrontendPlatforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<NorseRef Include="Abstractions.Contracts">

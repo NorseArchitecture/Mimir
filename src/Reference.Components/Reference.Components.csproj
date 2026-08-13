@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 	<PropertyGroup>
 		<Description>Norse.Reference.Components: the headless (no component library) shared home for reference-data client components, following Heimdall's AuthN.Components pattern — anything vendor-neutral (validators, form machinery, markup-free components) lands here and flows to every vendor rendering; any component with FluentUI markup belongs in Reference.Components.FluentUI instead, never here. Consumes the IReferenceService wire contract transport-dumb (each host registers its own implementation via DI) and proves wire results against Reference.Data.Contracts' browser-safe baked surface (IsoCountryCodes/Iso3166), which flows transitively through Reference.Contracts — never referenced directly.</Description>
+		<NorseFrontendPlatforms>All</NorseFrontendPlatforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<NorseRef Include="Abstractions.Components">
 			<Repo>Asgard</Repo>
 		</NorseRef>
 		<ProjectReference Include="../Reference.Contracts/Reference.Contracts.csproj" />
-		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 </Project>
