@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using Norse.Abstractions.Web.Server.Authorization;
+using Norse.Abstractions.Components.Authorization;
 
 namespace Norse.Reference.Web.Server;
 
