@@ -9,6 +9,6 @@ namespace Norse.Reference;
 /// </summary>
 public static class ReferencePolicies
 {
-	/// <summary>Satisfied by any authenticated-or-anonymous-cookie principal — no real requirement.</summary>
+	/// <summary>Satisfied by any principal, the anonymous role included — never an empty one.</summary>
 	public const string Public = "Reference.Public";
 }
