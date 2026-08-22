@@ -78,7 +78,12 @@ public sealed class CountriesControllerTests
 
 		var result = await controller.GetCountry("XX");
 
-		result.Result.ShouldBeOfType<NotFoundResult>();
+		// Not NotFoundResult: GrpcControllerBase.ToResult folds every body-forbidding category
+		// (NotFound included, alongside Unauthorized/InvalidCredentials) to a bare StatusCodeResult
+		// via TransportDispositions -- deliberately indistinguishable by result type from the other
+		// silent categories, so a 404 can't be told apart from a 401/403 at this layer either.
+		var statusResult = result.Result.ShouldBeOfType<StatusCodeResult>();
+		statusResult.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
 	}
 
 	[Fact]
