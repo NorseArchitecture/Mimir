@@ -14,9 +14,6 @@
 		<NorseRef Include="Reference.Data.Contracts">
 			<Repo>Mimisbrunnr</Repo>
 		</NorseRef>
-		<!-- Overrides a known-vulnerable transitive version pulled in by System.ServiceModel.Primitives —
-		     same fix Heimdall's AuthN.Services.csproj carries for the identical dependency. -->
-		<PackageReference Include="System.Security.Cryptography.Xml" Version="11.*-*" />
 		<PackageReference Include="System.ServiceModel.Primitives" Version="10.*" />
 	</ItemGroup>
 </Project>
