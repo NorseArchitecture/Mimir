@@ -16,7 +16,7 @@
 	<FormValidator/>
 	<ValidationSummary/>
 	<FluentTextInput @bind-Value="_request.CodeInput" Label="Code" Placeholder="US, USA, 840, 40..." Required="true"/>
-	<FluentButton Type="ButtonType.Submit" Appearance="ButtonAppearance.Primary" Disabled="IsSubmitting">Look up</FluentButton>
+	<FluentButton Type="ButtonType.Submit" Appearance="ButtonAppearance.Primary" Disabled="!CanSubmit">Look up</FluentButton>
 </EditForm>
 
 @if (_response is not null)

@@ -6,7 +6,7 @@ using Norse.Abstractions.Contracts;
 
 namespace Norse.Reference.Components.FluentUI.Tests;
 
-public sealed class CountryLookupTests : BunitContext
+public sealed class CountryLookupTests : InteractiveBunitContext
 {
 	public CountryLookupTests()
 	{
