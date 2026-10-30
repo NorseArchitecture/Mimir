@@ -10,9 +10,14 @@ namespace Norse.Reference.Web.Server;
 /// </summary>
 public static class ReferencePolicyDeclarations
 {
-	/// <summary>Configures <see cref="ReferencePolicies.Public" />.</summary>
+	/// <summary>
+	///     Configures <see cref="ReferencePolicies.Public" />. Reference reads are the one operation policy a machine
+	///     principal shares with the identity cookie, so the lanes are named explicitly rather than left to the generated
+	///     default (which would close the policy to <see cref="NorseLanes.Identity" /> alone). The REST facade still
+	///     requires <see cref="NorseLanes.Machine" /> and the facade audience; gRPC never selects the machine lane.
+	/// </summary>
 	/// <param name="policy">The builder to configure.</param>
 	[NorsePolicy(ReferencePolicies.Public)]
 	public static void ConfigurePublic(AuthorizationPolicyBuilder policy) =>
-		policy.RequireAuthenticatedUser();
+		policy.RequireAuthenticatedUser().RequireLane(NorseLanes.Identity, NorseLanes.Machine);
 }
