@@ -3,6 +3,10 @@
 		<NorseRef Include="Infrastructure.Persistence.EntityFramework">
 			<Repo>Midgard</Repo>
 		</NorseRef>
+		<!-- Test-only: the policy facts evaluate through the lane and audience handlers a real host registers. -->
+		<NorseRef Include="Infrastructure.Web.Server">
+			<Repo>Midgard</Repo>
+		</NorseRef>
 		<PackageReference Include="Testcontainers.PostgreSql" Version="*" />
 		<ProjectReference Include="../../src/Reference.Web.Server/Reference.Web.Server.csproj" />
 	</ItemGroup>
